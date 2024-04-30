@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Recognition</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Image Recognition</h1>
+      <form id="uploadForm" class="upload-form" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput" />
+        <label for="fileInput" class="upload-button">Choose Image</label>
+        <button type="submit" class="upload-button">Upload</button>
+      </form>
+      <div id="imageContainer"></div>
+    </div>
+  </body>
+  <script>
+    // Add your JavaScript code here
+    const uploadForm = document.getElementById("uploadForm");
+    const fileInput = document.getElementById("fileInput");
+    const imageContainer = document.getElementById("imageContainer");
+
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      try {
+        const response = await fetch("http://localhost:8000/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+        const imageUrl = `http://localhost:8000/download`;
+
+        displayImage(imageUrl);
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+    });
+
+    async function displayImage(imageUrl) {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const imageUrlBlob = URL.createObjectURL(blob);
+
+        const img = document.createElement("img");
+        img.src = imageUrlBlob;
+        img.classList.add("uploaded-image");
+
+        imageContainer.innerHTML = "";
+        imageContainer.appendChild(img);
+      } catch (error) {
+        console.error("Error downloading image:", error);
+      }
+    }
+  </script>
+</html>

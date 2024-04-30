@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "image-recongition-api"
+version = "0.1.0"
+description = ""
+authors = ["Precious Ohanyere <obbyprecious24@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+opencv-python-headless = "^4.9.0.80"
+fastapi = "^0.110.1"
+pyzbar = "^0.1.9"
+sqlalchemy = "^2.0.29"
+psycopg2-binary = "^2.9.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
