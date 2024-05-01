@@ -12,6 +12,8 @@ fastapi = "^0.110.1"
 pyzbar = "^0.1.9"
 sqlalchemy = "^2.0.29"
 psycopg2-binary = "^2.9.9"
+pyheif = "^0.7.1"
+pillow = "^10.3.0"
 
 
 [build-system]

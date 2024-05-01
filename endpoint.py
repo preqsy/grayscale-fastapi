@@ -1,17 +1,14 @@
-import mimetypes
+import os
+import logging
+
 from fastapi import Depends, HTTPException, UploadFile, File, APIRouter
 from fastapi.responses import StreamingResponse
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
-import logging
 
-import numpy as np
-import cv2
-import os
 import model
-import io
-
 from database import get_db
+from utils import greyscale_image
 
 
 UPLOADED_FILE = "uploaded_files"
@@ -42,22 +39,8 @@ async def download_file(db: Session = Depends(get_db)):
         if file is None or not file.picture:
             raise HTTPException(status_code=404, detail="No picture found")
 
-        image_data = io.BytesIO(file.picture)
+        file_path, media_type = greyscale_image(file)
 
-        img = cv2.imdecode(np.frombuffer(image_data.read(), np.uint8), cv2.IMREAD_COLOR)
-
-        if img is None:
-            raise HTTPException(status_code=500, detail="Failed to load image")
-
-        gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-        file_extension = os.path.splitext(file.filename)[1]
-        file_path = os.path.join(
-            UPLOADED_FILE, f"gray_{os.path.splitext(file.filename)[0]}{file_extension}"
-        )
-        cv2.imwrite(file_path, gray_img)
-        mime_type, _ = mimetypes.guess_type(file_path)
-        media_type = mime_type if mime_type else "application/octet-stream"
         return StreamingResponse(open(file_path, "rb"), media_type=media_type)
     except Exception as e:
         logger.error("Error downloading file: %s", e)
